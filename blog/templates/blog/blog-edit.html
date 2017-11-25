@@ -1,0 +1,132 @@
+{% extends "layouts/base.html" %}
+{% load blog_tags %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Edit Blog</h3>
+                </div>
+
+                <form class="form-horizontal" method="post" action="{% url 'blog:edit_blog' slug=post.slug %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="panel-body">
+                        {% show_messages messages %}
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                            {% if form.non_field_errors|length > 1 %}
+                                <ul style="padding: 0 15px;">
+                                {% for err in form.non_field_errors %}
+                                    <li>{{ err }}</li>
+                                {% endfor %}
+                                </ul>
+                            {% else %}
+                                {{ form.non_field_errors|striptags }}
+                            {% endif %}
+                            </div>
+                        {% endif %}
+
+                        <div class="form-group">
+                            <div class="col-md-12 {% if form.title.errors %}has-error{% endif %}">
+                                <input class="form-control" type="text" name="title" placeholder="Title" value="{{ post.title }}">
+                                {% if form.title.errors %}
+                                    <div class="help-block">
+                                    {% for err in form.title.errors %}
+                                        <strong>{{ err }}</strong><br>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-12 {% if form.body.errors %}has-error{% endif %}">
+                                <textarea class="form-control" name="body" placeholder="Body" rows="8">{{ post.body }}</textarea>
+                                {% if form.body.errors %}
+                                    <div class="help-block">
+                                    {% for err in form.body.errors %}
+                                        <strong>{{ err }}</strong><br>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-12 {% if form.short_description.errors %}has-error{% endif %}">
+                                <input class="form-control" type="text" name="short_description" placeholder="Short Description" value="{{ post.short_description }}">
+                                {% if form.short_description.errors %}
+                                    <div class="help-block">
+                                    {% for err in form.short_description.errors %}
+                                        <strong>{{ err }}</strong><br>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <div class="col-md-4 {% if form.banner.errors %}has-error{% endif %}">
+                                <input class="form-control" type="file" name="banner" accept="image/jpeg, image/jpg">
+                                {% if form.banner.errors %}
+                                    <div class="help-block">
+                                    {% for err in form.banner.errors %}
+                                        <strong>{{ err }}</strong><br>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4 {% if form.category.errors %}has-error{% endif %}">
+                                <select class="form-control" name="category">
+                                    <option value="">Select Category</option>
+                                    {% for k, v in form.fields.category.choices %}
+                                        {% if k %}
+                                        <option {% if post.category.id == k %}selected{% endif %} value="{{ k }}">{{ v }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                                {% if form.category.errors %}
+                                    <div class="help-block">
+                                    {% for err in form.category.errors %}
+                                        <strong>{{ err }}</strong><br>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4 {% if form.status.errors %}has-error{% endif %}">
+                                <select class="form-control" name="status">
+                                    <option value="">Select Status</option>
+                                    {% for k, v in form.fields.status.choices %}
+                                        {% if k == 'D' or k == 'P' %}
+                                        <option {% if post.status == k %}selected{% endif %} value="{{ k }}">{{ v }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                                {% if form.status.errors %}
+                                    <div class="help-block">
+                                    {% for err in form.status.errors %}
+                                        <strong>{{ err }}</strong><br>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="pull-right">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa fa-pencil" aria-hidden="true"></i> &nbsp;
+                                <strong>Update</strong>
+                            </button>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

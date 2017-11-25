@@ -1,0 +1,120 @@
+{% extends "layouts/base.html" %}
+{% load filters %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="well well-sm" style="margin-bottom: 0; background: #f9f9f9;">
+                <div class="text-center account-avatar">
+                    <img src="{{ user.avatar_or_default }}" class="img-circle img-thumbnail">
+                </div>
+
+                <div class="account-info">
+                    <small class="text-muted">Name:</small>
+                    <p class="text-uppercase">
+                        <strong>{{ user.first_name }} {{ user.last_name }}</strong>
+                    </p>
+                </div>
+                <div class="account-info">
+                    <small class="text-muted">Email:</small>
+                    <p><strong>{{ user.email }}</strong></p>
+                </div>
+                <div class="account-info">
+                    <small class="text-muted">Date Joined:</small>
+                    <p><strong>{{ user.date_joined|date:'d F, Y' }}</strong></p>
+                </div>
+            </div>
+            <a class="btn btn-primary pull-right" href="{% url 'update_account' %}" style="border-radius: 0 0 4px 4px;">
+                <i class="fa fa-pencil"></i> &nbsp; <strong>Edit Account</strong>
+            </a>
+            <div class="clearfix"></div>
+        </div>
+
+        <div class="col-sm-8">
+        {% if posts %}
+            <div id="post-container">
+            {% for val in posts %}
+                <div class="infinite-item">
+                    <div class="post-entity">
+                        <div class="post-entity-lft">
+                            <p>
+                                {% if val.status == 'P' %}
+                                    <a class="text-info" href="{% url 'blog:details' val.slug %}">{{ val.title }}</a>
+                                {% else %}
+                                    {{ val.title }}
+                                {% endif %}
+                            </p>
+                            <div class="post-entity-stats">
+                                {% if val.status == 'P' %}Published{% endif %}
+                                {% if val.status == 'D' %}Draft{% endif %} &sdot;
+                                {{ val.created_at|date:'F d, Y, h:i A' }} &sdot;
+                                <i class="fa fa-eye"></i> {{ val.views|to_int }} &sdot;
+                                <i class="fa fa-comments-o"></i> 50
+                            </div>
+                        </div>
+                        <div class="post-entity-rgt">
+                            <a class="text-info" title="Edit" href="{% url 'blog:edit_blog' slug=val.slug %}">
+                                <i class="fa fa-pencil"></i>
+                            </a>
+                            <span class="text-muted">&sdot;</span>
+                            <a class="text-danger" title="Delete" onclick="delete_post(this, '{{ val.slug }}')"><i class="fa fa-times"></i></a>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+
+            <div class="loading my-loader" style="display: none;">
+                <i class="fa fa-spinner fa-pulse fa-2x fa-fw" aria-hidden="true"></i>
+            </div>
+
+            {% if posts.has_next %}
+                <a class="infinite-more-link btn btn-primary pull-right" href="?page={{ posts.next_page_number }}" style="display: none;">
+                    <strong>More</strong> <i class="fa fa-angle-double-right" aria-hidden="true"></i>
+                </a>
+                <div class="clearfix"></div>
+            {% endif %}
+        {% else %}
+            <div class="alert alert-warning">
+                <p class="text-center">No posts yet!</p>
+            </div>
+        {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    var infinite = new Waypoint.Infinite({
+        element: $('#post-container')[0],
+        onBeforePageLoad: function () {
+            $('.loading').show();
+        },
+        onAfterPageLoad: function ($items) {
+            $('.loading').hide();
+        }
+    });
+
+    function delete_post(elem, slug)
+    {
+        if(confirm('Are you confirm to delete this post?')) {
+            $.ajax({
+                url: '{% url 'blog:delete_blog' %}',
+                data: 'slug='+slug,
+                type: "POST",
+                dataType: "json",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                    $(elem).closest('.infinite-item').addClass('loading');
+                },
+                success: function () {
+                    $(elem).closest('.infinite-item').remove();
+                    $(elem).closest('.infinite-item').removeClass('loading');
+                },
+                error: function () {}
+            });
+        }
+    }
+</script>
+{% endblock content %}

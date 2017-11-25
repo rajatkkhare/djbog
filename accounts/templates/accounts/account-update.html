@@ -1,0 +1,128 @@
+{% extends "layouts/base.html" %}
+{% load blog_tags %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4 col-sm-offset-4">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Update Account</h3>
+                </div>
+
+                <form class="form-horizontal" method="post" action="{% url 'update_account' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="panel-body">
+                        {% show_messages messages %}
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                            {% if form.non_field_errors|length > 1 %}
+                                <ul style="padding: 0 15px;">
+                                {% for err in form.non_field_errors %}
+                                    <li>{{ err }}</li>
+                                {% endfor %}
+                                </ul>
+                            {% else %}
+                                {{ form.non_field_errors|striptags }}
+                            {% endif %}
+                            </div>
+                        {% endif %}
+
+                        <div class="form-group">
+                            <div class="col-md-6 {% if form.first_name.errors %}has-error{% endif %}">
+                                <input class="form-control" type="text" name="first_name" placeholder="First Name" value="{{ user.first_name }}">
+                                {% if form.first_name.errors %}
+                                    <div class="help-block">
+                                    {% for err in form.first_name.errors %}
+                                        <strong>{{ err }}</strong><br>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 {% if form.last_name.errors %}has-error{% endif %}">
+                                <input class="form-control" type="text" name="last_name" placeholder="Last Name" value="{{ user.last_name }}">
+                                {% if form.last_name.errors %}
+                                    <div class="help-block">
+                                    {% for err in form.last_name.errors %}
+                                        <strong>{{ err }}</strong><br>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-12 {% if form.email.errors %}has-error{% endif %}">
+                                <input class="form-control" type="text" name="email" placeholder="Email" value="{{ user.email }}">
+                                {% if form.email.errors %}
+                                    <div class="help-block">
+                                    {% for err in form.email.errors %}
+                                        <strong>{{ err }}</strong><br>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-12 {% if form.username.errors %}has-error{% endif %}">
+                                <input class="form-control" type="text" name="username" placeholder="Username" value="{{ user.username }}">
+                                {% if form.username.errors %}
+                                    <div class="help-block">
+                                    {% for err in form.username.errors %}
+                                        <strong>{{ err }}</strong><br>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-12 {% if form.avatar.errors %}has-error{% endif %}">
+                                <input class="form-control" type="file" name="avatar" accept="image/jpeg, image/jpg">
+                                {% if form.avatar.errors %}
+                                    <div class="help-block">
+                                    {% for err in form.avatar.errors %}
+                                        <strong>{{ err }}</strong><br>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-12 {% if form.password.errors %}has-error{% endif %}">
+                                <input class="form-control" type="password" name="password" placeholder="Password">
+                                {% if form.password.errors %}
+                                    <div class="help-block">
+                                    {% for err in form.password.errors %}
+                                        <strong>{{ err }}</strong><br>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <div class="col-md-12 {% if form.confirm_password.errors %}has-error{% endif %}">
+                                <input class="form-control" type="password" name="confirm_password" placeholder="Confirm Password">
+                                {% if form.confirm_password.errors %}
+                                    <div class="help-block">
+                                    {% for err in form.confirm_password.errors %}
+                                        <strong>{{ err }}</strong><br>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="pull-right">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa fa-pencil" aria-hidden="true"></i> Update
+                            </button>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

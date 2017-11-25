@@ -1,0 +1,93 @@
+{% extends "layouts/base.html" %}
+{% load blog_tags %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4 col-sm-offset-4">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Login</h3>
+                </div>
+                <form class="form-horizontal" method="post" action="{% url 'login' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.GET.next }}">
+
+                    <div class="panel-body">
+                        {% show_messages messages %}
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                            {% if form.non_field_errors|length > 1 %}
+                                <ul style="padding: 0 15px;">
+                                {% for err in form.non_field_errors %}
+                                    <li>{{ err }}</li>
+                                {% endfor %}
+                                </ul>
+                            {% else %}
+                                {{ form.non_field_errors|striptags }}
+                            {% endif %}
+                            </div>
+                        {% endif %}
+
+                        <div class="form-group">
+                            <div class="col-md-12 {% if form.username.errors %}has-error{% endif %}">
+                                <input class="form-control" type="text" name="username" placeholder="Username" value="{{ form.cleaned_data.username }}">
+                                {% if form.username.errors %}
+                                    <div class="help-block">
+                                    {% for err in form.username.errors %}
+                                        <strong>{{ err }}</strong><br>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-12 {% if form.password.errors %}has-error{% endif %}">
+                                <input class="form-control" type="password" name="password" placeholder="Password">
+                                {% if form.password.errors %}
+                                    <div class="help-block">
+                                    {% for err in form.password.errors %}
+                                        <strong>{{ err }}</strong><br>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-8">
+                                <small><a href="{% url 'password_reset' %}" style="margin-top: 14px; display: inline-block;">Forgot password?</a></small>
+                            </div>
+                            <div class="col-sm-4">
+                                <button type="submit" class="btn btn-primary pull-right">
+                                    <i class="fa fa-sign-in" aria-hidden="true"></i> LOGIN
+                                </button>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="form-group text-center mb-0">
+                            <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-social btn-google">
+                                <span class="fa fa-google"></span> Google
+                            </a>
+                            <a href="{% url 'social:begin' 'facebook' %}" class="btn btn-social btn-facebook">
+                                <span class="fa fa-facebook"></span> Facebook
+                            </a>
+{#                            <a href="{% url 'social:begin' 'twitter' %}" class="btn btn-social btn-twitter">#}
+{#                                <span class="fa fa-twitter"></span> Twitter#}
+{#                            </a>#}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/bootstrap-social.css' %}">
+
+{% endblock content %}

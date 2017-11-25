@@ -1,0 +1,129 @@
+{% extends "layouts/base.html" %}
+{% load blog_tags %}
+{% load static %}
+{% load filters %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+    {% if posts.count %}
+        {% for val in posts %}
+            {% if forloop.counter0 == 2 %}
+                <div class="col-sm-4 tile-cnt">
+                    <h5 class="widget-title">CATEGORIES</h5>
+                    <div class="separator-line"></div>
+                    <ul class="list-group catg-list">
+                        {% get_categories 'A' as categories %}
+                        {% for val in categories %}
+                            <li class="list-group-item">
+                                <a href="{% url 'blog:categories' val.title|lower|urlencode %}" style="display: block;">
+                                    {{ val.title }}
+                                    <span class="badge pull-right">{{ val.post_count }}</span>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            {% if forloop.counter0 == 3 %}
+                <div class="col-sm-4 tile-cnt">
+                    <h5 class="widget-title">MOST VIEWED BLOGS</h5>
+                    <div class="separator-line"></div>
+                    <ul class="list-group catg-list">
+                        {% most_viewed 5 as most_viewed %}
+                        {% for val in most_viewed %}
+                            <li class="list-group-item">
+                                <div class="list-post-title">
+                                    <a href="{% url 'blog:details' slug=val.slug %}" style="display: block;">{{ val.title|slice:':75'|add:'...' }}</a>
+                                </div>
+                                <div class="list-post-stats">
+                                    <div class="pull-left">
+                                        <small class="text-muted">
+                                            <i class="fa fa-eye"></i> {{ val.views|to_int }}
+                                            <i class="fa fa-comments"></i> {{ val.comments|to_int }}
+                                        </small>
+                                    </div>
+                                    <div class="pull-right text-right">
+                                        <a href=""><small>- {{ val.user.first_name|add:' '|add:val.user.last_name }}</small></a>
+                                    </div>
+                                </div>
+                                <div class="clearfix"></div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <div class="col-sm-4 tile-cnt">
+                <div class="tile">
+                    <div class="tile-ctg">
+                        <h5>
+                            <a href="{% url 'blog:categories' val.category|lower|urlencode %}">{{ val.category }}</a>
+                        </h5>
+                    </div>
+                    <a href="{% url 'blog:details' val.slug %}">
+                        <div class="tile-img" style="background-image: url({{ val.banner.url|banner_url:'360x230-' }});"></div>
+                    </a>
+                    <div class="tile-detail">
+                        <small>POSTED BY <a href="">{{ val.user.first_name|add:' '|add:val.user.last_name }}</a> | {{ val.created_at|date:'d F Y' }}</small>
+                        <a href="{% url 'blog:details' val.slug %}">
+                            <h4>{{ val.title|slice:':32'|add:'...' }}</h4>
+                            <p>{{ val.short_description|slice:':150'|add:'...' }}</p>
+                        </a>
+                        <div class="separator-line"></div>
+                        <div class="tile-action">
+                            <a onclick="like_post({{ val.id }})"><i class="fa fa-heart-o"></i>Like</a>
+                            <a><i class="fa fa-share-alt"></i>Share</a>
+                            <a href="{% url 'blog:details' val.slug %}#comments">
+                                <i class="fa fa-comment-o"></i>{{ val.comments }} comments
+                            </a>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if forloop.counter0 == 5 %}
+                <div class="col-sm-4 tile-cnt">
+                    <h5 class="widget-title">SUGGESTED BLOGS</h5>
+                    <div class="separator-line"></div>
+                    <ul class="list-group catg-list">
+                        {% suggested_post 5 as suggested_post %}
+                        {% for val in suggested_post %}
+                            <li class="list-group-item">
+                                <div class="list-post-title">
+                                    <a href="{% url 'blog:details' slug=val.slug %}">{{ val.title|slice:':75'|add:'...' }}</a>
+                                </div>
+                                <div class="list-post-stats">
+                                    <div class="pull-left">
+                                        <small class="text-muted">
+                                            <i class="fa fa-eye"></i> {{ val.views|to_int }}
+                                            <i class="fa fa-comments"></i> {{ val.comments|to_int }}
+                                        </small>
+                                    </div>
+                                    <div class="pull-right text-right">
+                                        <a href=""><small>- {{ val.user.first_name|add:' '|add:val.user.last_name }}</small></a>
+                                    </div>
+                                </div>
+                                <div class="clearfix"></div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-warning">
+            <p class="text-center">No posts found!</p>
+        </div>
+    {% endif %}
+    </div>
+</div>
+
+<script>
+    function like_post(id) {
+        alert(id);
+    }
+</script>
+{% endblock content %}
